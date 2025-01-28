@@ -22,6 +22,6 @@ metadata:
 spec:
   targets:
     # Registro do template Python, Go e Rust
-    - ./python-go-rust-template.yaml
+    - ./templates/python-go-rust-template.yaml
 
    
