@@ -5,4 +5,4 @@ metadata:
   description: Registro de templates Python disponíveis no Backstage.
 spec:
   targets:
-    - ./templates/python-template.yaml
+    - ./python-template.yaml
