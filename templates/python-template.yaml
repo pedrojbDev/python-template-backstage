@@ -1,13 +1,11 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: create-python-go-rust-service
-  title: Serviço Base em Python, Go ou Rust
-  description: Template para criar serviços em Python, Go ou Rust, integrado ao pipeline existente.
+  name: python-service
+  title: Criar um Serviço Python
+  description: Um template para criar um novo serviço Python com estrutura básica.
   tags:
     - python
-    - go
-    - rust
     - service
 spec:
   owner: devops-team
@@ -16,67 +14,50 @@ spec:
     - title: Configurações do Projeto
       required:
         - projectName
-        - language
         - repoVisibility
       properties:
         projectName:
           title: Nome do Projeto
           type: string
-          description: Nome do repositório ou serviço.
-        language:
-          title: Linguagem do Projeto
-          type: string
-          enum:
-            - python
-            - go
-            - rust
-          description: Escolha a linguagem base.
+          description: Nome do serviço Python.
         repoVisibility:
           title: Visibilidade do Repositório
           type: string
           enum:
             - public
             - private
-          description: Visibilidade do repositório GitHub.
+          description: Define a visibilidade do repositório GitHub.
+
   steps:
     - id: fetch-template
-      name: Buscar Template Base
+      name: Baixar Template Base
       action: fetch:template
       input:
-        url: ./templates/{{ parameters.language }}-base
+        url: https://github.com/pedrojbDev/python-template-backstage/archive/main.zip
         targetPath: .
+
     - id: process-template
       name: Processar Template
       action: scaffolder:template
-    - id: run-validation
-      name: Validar Configuração Inicial
-      action: run:command
-      input:
-        workingDirectory: .
-        command: |
-          if [ "{{ parameters.language }}" = "python" ]; then
-            pip install -r requirements.txt && pytest;
-          elif [ "{{ parameters.language }}" = "go" ]; then
-            go mod tidy && go test ./...;
-          elif [ "{{ parameters.language }}" = "rust" ]; then
-            cargo test;
-          fi
+
     - id: publish-to-repo
-      name: Publicar no GitHub
+      name: Criar Repositório no GitHub
       action: publish:github
       input:
         repoUrl: github.com/{{ parameters.owner }}/{{ parameters.projectName }}
         repoVisibility: {{ parameters.repoVisibility }}
+
     - id: register-in-catalog
-      name: Registrar no Catálogo
+      name: Registrar no Catálogo do Backstage
       action: catalog:register
       input:
         location:
           type: url
           target: https://github.com/{{ parameters.owner }}/{{ parameters.projectName }}/blob/main/catalog-info.yaml
+
   output:
     links:
       - title: Repositório do Projeto
         url: https://github.com/{{ parameters.owner }}/{{ parameters.projectName }}
-      - title: Catálogo Backstage
+      - title: Backstage Catalog
         url: /catalog/default/component/{{ parameters.projectName }}

@@ -1,0 +1,8 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: python-templates
+  description: Registro de templates Python disponíveis no Backstage.
+spec:
+  targets:
+    - ./templates/python-template.yaml
